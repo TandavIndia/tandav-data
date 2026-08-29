@@ -1,0 +1,27 @@
+name: Tandav Data Sync
+on:
+  schedule:
+    - cron: '*/10 * * * *' # Runs every 10 minutes
+  workflow_dispatch: # Allows manual run
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run Scraper
+        run: python sync.py
+      - name: Commit and Push
+        run: |
+          git config --global user.name "Tandav Bot"
+          git config --global user.email "bot@tandav.india"
+          git add jan_shakti_live.json
+          git commit -m "Auto-update Ledger" || exit 0
+          git push
